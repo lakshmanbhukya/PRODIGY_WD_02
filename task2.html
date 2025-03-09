@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <link rel="stylesheet" href="task2-style.css">
+</head>
+
+<body>
+    <div class="stopwatch-container">
+        <div class="display">00:00:00</div>
+        <div class="controls">
+            <button id="startStop">Start</button>
+            <button id="reset">Reset</button>
+            <button id="lap">Lap</button>
+        </div>
+        <div class="lap-times"></div>
+    </div>
+
+    <script>
+        let time = 0;
+        let running = false;
+        let interval;
+        let lapCount = 1;
+
+        const display = document.querySelector('.display');
+        const startStopButton = document.getElementById('startStop');
+        const resetButton = document.getElementById('reset');
+        const lapButton = document.getElementById('lap');
+        const lapTimes = document.querySelector('.lap-times');
+
+        function formatTime(ms) {
+            const minutes = Math.floor(ms / 6000);
+            const seconds = Math.floor((ms % 6000) / 100);
+            const centiseconds = ms % 100;
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}:${centiseconds.toString().padStart(2, '0')}`;
+        }
+
+        function toggleStartStop() {
+            if (running) {
+                clearInterval(interval);
+                startStopButton.textContent = 'Start';
+                startStopButton.style.backgroundColor = '#4CAF50';
+            } else {
+                interval = setInterval(() => {
+                    time++;
+                    display.textContent = formatTime(time);
+                }, 10);
+                startStopButton.textContent = 'Stop';
+                startStopButton.style.backgroundColor = '#f44336';
+            }
+            running = !running;
+        }
+
+        function reset() {
+            clearInterval(interval);
+            time = 0;
+            running = false;
+            lapCount = 1;
+            display.textContent = formatTime(time);
+            startStopButton.textContent = 'Start';
+            startStopButton.style.backgroundColor = '#4CAF50';
+            lapTimes.innerHTML = '';
+        }
+
+        function recordLap() {
+            if (running) {
+                const lapTime = document.createElement('div');
+                lapTime.className = 'lap-time';
+                lapTime.textContent = `Lap ${lapCount}: ${formatTime(time)}`;
+                lapTimes.insertBefore(lapTime, lapTimes.firstChild);
+                // Increment lap counter
+                lapCount++;
+            }
+        }
+
+        startStopButton.addEventListener('click', toggleStartStop);
+        resetButton.addEventListener('click', reset);
+        lapButton.addEventListener('click', recordLap);
+    </script>
+</body>
+
+</html>
